@@ -10,7 +10,7 @@
  <script>
   alert("欢迎进入我的网站，本网站为资源网站，由B站（bilibili）的up主小小玩电脑制作。感谢您的访问，此网站还在制作，稍后再访问吧。")
  </script> 
- <a href="1.html">1</a>
+ <a href="小小的资源库 v.3.00.apk">1</a>
  <style>
          .button {
              padding: 20px 30px;
@@ -24,4 +24,28 @@
              background-color: #00002A;
          }
   </style>
+    <div id="clock">00:00:00</div>
+ 
+    <script>
+        function updateClock() {
+            const now = new Date();
+            // 获取时、分、秒并格式化为两位数 
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            // 组合成时间字符串 
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            
+            // 更新显示
+            document.getElementById('clock').textContent = timeString;
+        }
+ 
+        // 初始加载立即显示
+        updateClock();
+        // 每秒更新一次 
+        setInterval(updateClock, 1000);
+    </script>
 </body>
+</head>
+</html>
