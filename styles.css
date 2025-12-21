@@ -7,3 +7,14 @@ color: green;
 body {
     background-image: url("tp.png")
 }
+        .button {
+             padding: 20px 30px;
+             background-color:rgba(0,0,0,0.3);
+             color: white;
+             border: none;
+             bprder-radius: 50px;
+             cursor: pointer;
+         }
+         .button:hover {
+             background-color: #00002A;
+         }
