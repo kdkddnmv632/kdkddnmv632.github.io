@@ -5,10 +5,7 @@ a {
 color: white;
 }
 body {
-    background-image:url('img102.jpg');
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+    background-image:url("img102.jpg");
 }
         .button {
              padding: 20px 30px;
