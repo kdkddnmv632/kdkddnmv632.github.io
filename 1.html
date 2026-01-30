@@ -1,13 +1,212 @@
 <!DOCTYPE html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" type="text/css" href="styles.css" >
-</head>
-<body>
-    <h1>链接</h1>
-            <nav id="navbar">
-            <ul>
-                <li><a href="https://pan.huang1111.cn/s/K9M99iY?path=%2F" class="nav-link">limbo虚拟机</a></li>
-            </ul>
-        </nav>
-</body>
+ <html lang="zh-CN" 
+ <head>
+     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>小小的资源库网页</title>
+     <h1>邮箱大全</h1>
+    <link rel="stylesheet" href="styles.css">
+ </head>
+ <style>
+         .button {
+             padding: 20px 30px;
+             background-color:rgba(0,0,0,0.3);
+             color: white;
+             border: none;
+             bprder-radius: 50px;
+             cursor: pointer;
+         }
+         .button:hover {
+             background-color: #00002A;
+         }
+
+             background: #d         * {
+             margin: 0;
+             padding: 0;
+             box-sizing: border-box;
+             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+         }
+         
+         body {
+             background: linear-gradient(135deg, #f5f7fa 0%, #e6ebf5 100%);
+             color: #333;
+             line-height: 1.6;
+             padding: 30px;
+             min-height: 100vh;
+         }
+         
+         .container {
+             max-width: 1200px;
+             margin: 0 auto;
+             display: grid;
+             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+             gap: 25px;
+         }
+         
+         /* 资源卡片样式 */
+         .resource-card {
+             background: white;
+             border-radius: 15px;
+             overflow: hidden;
+             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+             transition: transform 0.3s ease;
+         }
+         
+         .resource-card:hover {
+             transform: translateY(-5px);
+         }
+         
+         .card-header {
+             background: #3498db;
+             padding: 15px 20px;
+             color: white;
+         }
+         
+         .card-header h3 {
+             font-size: 1.4rem;
+             margin-bottom: 8px;
+         }
+         
+         .tech-tags {
+             display: flex;
+             gap: 8px;
+         }
+         
+         .tech-tags span {
+             background: rgba(255,255,255,0.2);
+             padding: 3px 10px;
+             border-radius: 20px;
+             font-size: 0.85rem;
+         }
+         
+         .card-description {
+             padding: 20px;
+             font-size: 1rem;
+             color: #555;
+             min-height: 100px;
+             border-bottom: 1px solid #eee;
+         }
+         
+         .card-footer {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             padding: 15px 20px;
+         }
+         
+         .free-label {
+             color: #27ae60;
+             font-weight: bold;
+             font-size: 1.1rem;
+         }
+         
+         .action-buttons {
+             display: flex;
+             gap: 10px;
+         }
+         
+         .action-buttons button {
+             padding: 8px 15px;
+             border: none;
+             border-radius: 5px;
+             cursor: pointer;
+             font-weight: 600;
+             transition: background 0.3s;
+         }
+         
+         .code-btn {
+             background: #e0e0e0;
+             color: #333;
+         }
+         
+         .code-btn:hover {0d0d0;
+         }
+         
+         .run-btn {
+             background: #3498db;
+             color: white;
+         }
+         
+         .run-btn:hover {
+             background: #2980b9;
+         }
+         
+         .download-btn {
+             background: #27ae60;
+             color: white;
+             padding: 10px 22px; /* 放大按钮 */
+         }
+         
+         .download-btn:hover {
+             background: #219653;
+         }
+</style>
+ <body>
+     <div class="container">
+        
+         <div class="resource-card">
+             <div class="card-header">
+                 <h3>QQ邮箱</h3>
+             </div>
+             <p class="card-description">
+                qq邮箱
+             </p>
+             <div class="card-footer">
+                 <span class="free-label">免费</span>
+                 <div class="action-buttons">
+                     <button class="download-btn"><a href="https://mail.qq.com/">打开 </a></button>
+                 </div>
+             </div>
+         </div>
+          <div class="resource-card">
+             <div class="card-header">
+                 <h3>163邮箱</h3>
+                 <div class="tech-tags">
+                     <span>实用</span>
+                 </div>
+             </div>
+             <p class="card-description">
+             </p>
+             <div class="card-footer">
+                 <span class="free-label">免费（废话）</span>
+                 <div class="action-buttons">
+                     <button class="download-btn"><a href="https://mail.163.com/">打开 </a></button>
+                 </div>
+             </div>
+         </div>
+         <div class="resource-card">
+             <div class="card-header">
+                 <h3>126邮箱</h3>
+                 <div class="tech-tags">
+                     <span>实用</span>
+                 </div>
+             </div>
+             <p class="card-description">
+             </p>
+             <div class="card-footer">
+                 <span class="free-label">免费</span>
+                 <div class="action-buttons">
+                     <button class="download-btn"><a href="https://mail.126.com/">打开 </a></button>
+                 </div>
+             </div>
+         </div>
+         <div class="resource-card">
+             <div class="card-header">
+                 <h3>yeah.net邮箱</h3>
+                 <div class="tech-tags">
+                 </div>
+             </div>
+             <p class="card-description">
+             </p>
+             <div class="card-footer">
+                 <span class="free-label">免费</span>
+                 <div class="action-buttons">
+                     <button class="download-btn"><a href="https://www.yeah.net/">打开 </a></button>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </body>
+         <!-- 来看到源码了亲一个，mua。依旧防伪标识 -->
+
+ </html>
