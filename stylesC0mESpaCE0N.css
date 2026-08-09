@@ -6,9 +6,9 @@
 .nav-btn {
     padding: 5px 12px;
     text-align: center;
-    background: hsla(168, 87%, 41%, 0.199);
-    borsder: 1px solid #18e66a4d;
-    color: rgb(16, 187, 127);
+    background: hsl(0, 90%, 45%);
+    borsder: 1px solid #e61829a8;
+    color: rgb(187, 16, 16);
     border-radius: 20px;
     cursor: pointer;
     font-size: 14px;
@@ -16,15 +16,15 @@
     align-items: center;
   }
   .nav-btn:hover {
-    background: hsla(172, 90%, 32%, 0.407);
+    background: hsla(0, 90%, 32%, 0.407);
     transform: translateY(-2px);
   }
 a {
     text-align: center;
-    color: #03bb84;
+    color: #bb0303;
 }
  .header {
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    background: linear-gradient(135deg, #721e1e, #cb0d0d);
     color: #fff;
     padding: 18px 40px;
     display: flex;
@@ -47,7 +47,7 @@ a {
     width: 36px; height: 36px;
     border-radius: 50%;
     background: #ffd700;
-    color: #1e3c72;
+    color: #721e1e;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -56,7 +56,7 @@ a {
     .post-title .tag {
     display: inline-block;
     background: #e8f0fe;
-    color: #2a5298;
+    color: #c80f0f;
     padding: 2px 8px;
     border-radius: 3px;
     font-size: 12px;
@@ -69,5 +69,5 @@ a {
   .post-meta span { margin-right: 12px; }
  h1 {
     text-align: center;
-    color: rgb(100, 70, 236);
+    color: rgb(236, 70, 70);
 }
