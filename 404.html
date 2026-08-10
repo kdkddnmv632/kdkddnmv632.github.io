@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 杂谈论坛 | 连接已断开</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #00ff41;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 扫描线效果 */
+        body::before {
+            content: " ";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            padding: 20px;
+        }
+
+        .error-code {
+            font-size: 120px;
+            font-weight: bold;
+            color: #ff003c;
+            text-shadow: 0 0 10px #ff003c, 0 0 20px #ff003c;
+            position: relative;
+            animation: glitch 2s infinite;
+        }
+
+        /* 故障抖动动画 */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .status-msg {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #ccc;
+            letter-spacing: 2px;
+        }
+
+        .admin-notice {
+            margin-top: 40px;
+            border: 1px solid #333;
+            padding: 20px;
+            max-width: 600px;
+            text-align: left;
+            background: rgba(0, 255, 65, 0.03);
+            line-height: 1.6;
+            color: #aaa;
+        }
+
+        .admin-notice h3 {
+            color: #ffcc00;
+            margin-top: 0;
+            border-bottom: 1px dashed #333;
+            padding-bottom: 10px;
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        /* 隐藏的Zero留言，鼠标选中时可见 */
+        ::selection {
+            background: #00ff41;
+            color: #000;
+        }
+        
+        .hidden-text {
+            color: #050505; /* 与背景色融为一体 */
+            user-select: auto;
+            font-size: 14px;
+            margin-top: 30px;
+            cursor: default;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            font-size: 12px;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="error-code">404</div>
+        <div class="status-msg">FATAL ERROR: DATABASE CORRUPTED <span class="blink">_</span></div>
+        
+        <div class="admin-notice">
+            <h3>[ 系统紧急公告 ]</h3>
+            <p>尊敬的用户：</p>
+            <p>杂谈论坛主服务器遭到未知恶意攻击，核心数据发生严重逻辑错误。为防止隐私泄露，管理员已执行物理断网操作。</p>
+            <p><strong>请勿尝试刷新页面！请勿点击任何站内链接！</strong></p>
+            <p>技术团队正在紧急抢修。恢复时间待定。给您带来的不便，敬请谅解。</p>
+            <p style="text-align: right; color: #666;">—— 杂谈论坛</p>
+        </div>
+        <div class="hidden-text">
+            他们切断了电源，但切不断记忆。去源码里找我。别相信公告。
+        </div>
+    </div>
+
+    <div class="footer">
+        Abyss Forum v10.2.4 | Node: Offline | Ping: Timeout
+    </div>
+    <a href="indexzt.html">返回</a>
+
+    <!-- 
+    =========================================================
+    
+    致看到这里的你：
+    公告是假的。他们不是在抢修，他们是在销毁证据。
+    真正的备份没有被破坏，只是被藏起来了。
+    不要加入它们
+    —— Zero
+    =========================================================
+    -->
+
+    <script>
+        // 禁用右键，增加一点“被控制”的压迫感
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // 禁用常见的快捷键 (F12, Ctrl+Shift+I, Ctrl+U)
+        document.onkeydown = function(e) {
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+            }
+            if (e.keyCode === 123) { // F12
+                e.preventDefault();
+            }
+            if (e.ctrlKey && e.keyCode === 85) { // Ctrl+U
+                e.preventDefault();
+            }
+        }
+    </script>
+</body>
+</html>

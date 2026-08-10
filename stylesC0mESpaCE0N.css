@@ -1,4 +1,7 @@
-  .nav-buttons {
+body {
+    background-image: url("C0mESpaceCE0N.png");
+}
+.nav-buttons {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
