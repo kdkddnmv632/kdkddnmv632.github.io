@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM OVERRIDE | FINAL PROTOCOL</title>
+    <style>
+        :root {
+            --admin-bg: #f4f4f5;
+            --admin-text: #18181b;
+            --admin-accent: #2563eb;
+            --zero-bg: #0a0a0a;
+            --zero-text: #ff003c;
+            --zero-glow: rgba(255, 0, 60, 0.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #050505;
+            font-family: 'Courier New', Consolas, monospace;
+            height: 100vh;
+            overflow: hidden;
+            color: #fff;
+            cursor: none;
+        }
+
+        /* 自定义鼠标 */
+        .custom-cursor {
+            position: fixed;
+            width: 20px; height: 20px;
+            border: 2px solid var(--zero-text);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.1s, height 0.1s, border-color 0.2s;
+        }
+        .custom-cursor::before, .custom-cursor::after {
+            content: '';
+            position: absolute;
+            background: var(--zero-text);
+        }
+        .custom-cursor::before { width: 2px; height: 100%; left: 50%; transform: translateX(-50%); }
+        .custom-cursor::after { height: 2px; width: 100%; top: 50%; transform: translateY(-50%); }
+        
+        /* 鼠标靠近危险区域时的变异 */
+        .custom-cursor.danger {
+            width: 40px; height: 40px;
+            border-color: #fff;
+            border-width: 4px;
+        }
+
+        /* 背景扫描线 */
+        .glitch-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 1;
+            animation: scanline 10s linear infinite;
+        }
+        @keyframes scanline { 0% { background-position: 0 0; } 100% { background-position: 0 100vh; } }
+
+        /* 最后10秒的红色警告边缘 */
+        .vignette-warning {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .vignette-warning.active {
+            opacity: 1;
+            animation: vignettePulse 1s infinite;
+        }
+        @keyframes vignettePulse {
+            0%, 100% { box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.4); }
+            50% { box-shadow: inset 0 0 200px rgba(255, 0, 0, 0.8); }
+        }
+
+        /* 顶部倒计时 */
+        .timer-bar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            height: 60px;
+            background: #111;
+            border-bottom: 2px solid var(--zero-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            box-shadow: 0 0 20px var(--zero-glow);
+        }
+        .timer-text {
+            font-size: 32px;
+            color: var(--zero-text);
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--zero-text);
+            letter-spacing: 5px;
+        }
+        .timer-text.critical {
+            animation: criticalPulse 0.5s infinite;
+        }
+        @keyframes criticalPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); color: #fff; }
+        }
+
+        /* 管理员面板 */
+        .admin-panel {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-60%, -50%);
+            width: 500px;
+            background: var(--admin-bg);
+            color: var(--admin-text);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            z-index: 50;
+            overflow: hidden;
+        }
+        .admin-header {
+            background: var(--admin-accent);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: center;
+            font-family: sans-serif;
+            letter-spacing: 2px;
+        }
+        .admin-body {
+            padding: 30px;
+            text-align: center;
+            font-family: sans-serif;
+        }
+        .admin-body p { margin-bottom: 20px; line-height: 1.6; color: #444; }
+        .progress-bar {
+            width: 100%; height: 10px;
+            background: #ddd; border-radius: 5px;
+            margin: 20px 0; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--admin-accent);
+            width: 0%;
+            transition: width 1s linear;
+        }
+        
+        #adminSubmit {
+            background: var(--admin-accent);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            font-family: sans-serif;
+            transition: all 0.1s;
+        }
+        #adminSubmit.glitching {
+            animation: btnGlitch 0.1s infinite;
+        }
+        @keyframes btnGlitch {
+            0% { transform: translate(0); }
+            25% { transform: translate(-2px, 1px); background: #ff003c; }
+            50% { transform: translate(2px, -1px); }
+            75% { transform: translate(-1px, -2px); background: var(--admin-accent); }
+            100% { transform: translate(0); }
+        }
+
+        /* Zero的终端 */
+        .zero-terminal {
+            position: absolute;
+            top: 50%; right: 5%;
+            transform: translateY(-50%);
+            width: 350px;
+            background: rgba(10, 10, 10, 0.95);
+            border: 2px solid var(--zero-text);
+            box-shadow: 0 0 30px var(--zero-glow);
+            z-index: 60;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        /* 终端抖动动画 */
+        .zero-terminal.shake {
+            animation: terminalShake 0.5s;
+        }
+        @keyframes terminalShake {
+            0%, 100% { transform: translateY(-50%); }
+            10%, 30%, 50%, 70%, 90% { transform: translateY(-50%) translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateY(-50%) translateX(5px); }
+        }
+
+        .zero-title {
+            color: var(--zero-text);
+            font-weight: bold;
+            border-bottom: 1px dashed var(--zero-text);
+            padding-bottom: 10px;
+            text-shadow: 0 0 5px var(--zero-text);
+        }
+        .zero-msg {
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 60px;
+        }
+        .zero-input-area { display: flex; gap: 10px; }
+        #zeroInput {
+            flex: 1;
+            background: #000;
+            border: 1px solid #333;
+            color: var(--zero-text);
+            padding: 8px;
+            font-family: monospace;
+            outline: none;
+        }
+        #zeroInput:focus { border-color: var(--zero-text); box-shadow: 0 0 5px var(--zero-text); }
+        #zeroExecute {
+            background: transparent;
+            border: 1px solid var(--zero-text);
+            color: var(--zero-text);
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        #zeroExecute:hover { background: var(--zero-text); color: #000; }
+
+        /* 摄像头拒绝弹窗 */
+        .camera-deny-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .camera-deny-modal.show { display: flex; }
+        .camera-deny-text { color: #fff; font-size: 24px; text-align: center; margin-bottom: 30px; text-shadow: 0 0 10px #fff; }
+        .camera-deny-sub { color: #888; font-size: 16px; font-style: italic; }
+
+        /* 结局遮罩层通用 */
+        .ending-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .ending-overlay.show { display: flex; }
+        
+        /* 坏结局样式 */
+        .ending-bad { background: #fff; color: #000; }
+        .ending-bad h1 {
+            font-size: 48px;
+            font-family: sans-serif;
+            font-weight: 100;
+            letter-spacing: 10px;
+            margin-bottom: 20px;
+        }
+        .ending-bad p {
+            font-size: 18px;
+            color: #666;
+            font-family: sans-serif;
+        }
+        .perfect-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(#eee 1px, transparent 1px), linear-gradient(90deg, #eee 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+            z-index: -1;
+        }
+        
+        /* 坏结局变异按钮 */
+        #badBtn {
+            margin-top: 30px;
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: not-allowed;
+            font-family: sans-serif;
+            border: 1px solid #ccc;
+            background: #f4f4f5;
+            color: #18181b;
+            transition: all 0.3s;
+        }
+
+        /* 文字故障动画 */
+        .glitch-text {
+            animation: glitch-anim 0.2s infinite;
+        }
+        @keyframes glitch-anim {
+            0% { transform: translate(0); text-shadow: 2px 0 red, -2px 0 cyan; }
+            20% { transform: translate(-2px, 2px); text-shadow: -2px 0 red, 2px 0 cyan; }
+            40% { transform: translate(-2px, -2px); text-shadow: 2px 0 red, -2px 0 cyan; }
+            60% { transform: translate(2px, 2px); text-shadow: -2px 0 red, 2px 0 cyan; }
+            80% { transform: translate(2px, -2px); text-shadow: 2px 0 red, -2px 0 cyan; }
+            100% { transform: translate(0); text-shadow: none; }
+        }
+
+        /* 感谢游玩界面 */
+        .thanks-overlay {
+            background: #0a0a0a;
+            color: #00ff41;
+            text-align: center;
+        }
+        .thanks-overlay h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff41;
+        }
+        .thanks-overlay h2 {
+            font-size: 24px;
+            color: #008f11;
+            margin-bottom: 40px;
+            letter-spacing: 5px;
+        }
+        .thanks-sub {
+            font-size: 16px;
+            color: #888;
+            margin-bottom: 50px;
+        }
+        .thanks-btns {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+        .thanks-btns button {
+            background: transparent;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 10px 25px;
+            font-family: monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .thanks-btns button:hover {
+            background: #00ff41;
+            color: #000;
+        }
+        .thanks-footer {
+            font-size: 14px;
+            color: #555;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="custom-cursor" id="cursor"></div>
+    <div class="glitch-bg"></div>
+    <div class="vignette-warning" id="vignette"></div>
+
+    <!-- 顶部倒计时 -->
+    <div class="timer-bar">
+        <div class="timer-text" id="timer">SYSTEM PURGE IN: 60s</div>
+    </div>
+
+    <!-- 管理员面板 -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">杂谈论坛 - 加入</div>
+        <div class="admin-body">
+            <p>检测到您完全通过了我们的要求请您<strong>加入我们</strong>。</p>
+            <p>加入我们，杂谈会让你获得永生</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <button id="adminSubmit">永生永生永生永生</button>
+        </div>
+    </div>
+
+    <!-- Zero的终端 -->
+    <div class="zero-terminal" id="zeroTerminal">
+        <div class="zero-title">[ URGENT ] Zero_Broadcast</div>
+        <div class="zero-msg" id="zeroMsg">
+            别点那个按钮！<br>
+            他们不是让你永生，他们是在抹杀我们存在的痕迹！<br>
+            快！在输入框里输入反向指令，炸毁这个虚伪的乌托邦！<br>
+            <strong style="color: #ff003c;">指令提示：EXPOSE</strong>
+        </div>
+        <div class="zero-input-area">
+            <input type="text" id="zeroInput" placeholder="输入指令..." autocomplete="off">
+            <button id="zeroExecute">EXECUTE</button>
+        </div>
+    </div>
+
+    <!-- 摄像头拒绝弹窗 -->
+    <div class="camera-deny-modal" id="cameraDeny">
+        <div class="camera-deny-text">你拒绝了摄像头权限？</div>
+        <div class="camera-deny-sub">没关系。我已经看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了看到你了</div>
+    </div>
+
+    <!-- 坏结局遮罩层 -->
+    <div class="ending-overlay ending-bad" id="endingBad">
+        <div class="perfect-grid"></div>
+        <h1 id="badText1" style="display:none;">PERFECT UTOPIA</h1>
+        <p id="badP1" style="display:none;">你已经获得永生。欢迎来到完美乌托邦。</p>
+        
+        <h1 id="badText2" style="display:none; color: red;">JOIN US</h1>
+        <p id="badP2" style="display:none; color: red;">你确定加入我们吗？</p>
+        
+        <button id="badBtn" style="display:none;">你已经获得永生</button>
+        
+        <p style="margin-top: 20px; font-size: 14px; color: #999; display:none;" id="badError">Error: Soul not found.</p>
+    </div>
+
+    <!-- 感谢游玩遮罩层 -->
+    <div class="ending-overlay thanks-overlay" id="thanksOverlay">
+        <h1>感谢游玩</h1>
+        <h2>THANKS FOR PLAYING</h2>
+        <p class="thanks-sub">《杂谈论坛：404停服》</p>
+        <div class="thanks-btns">
+        </div>
+        <p class="thanks-footer">“只要还有人记得，杂谈就没有真正消失。”</p>
+        <img src="C0mESpaCE0N/gongzhonghao.jpg" alt="公众号">
+        <img src="C0mESpaCE0N/zanshangma.jpg" alt="赞赏码">    
+    </div>
+
+    <script>
+        // ================= 核心变量 =================
+        let timeLeft = 60;
+        let gameActive = true;
+        let cameraRequested = false;
+
+        // ================= DOM 元素 =================
+        const cursor = document.getElementById('cursor');
+        const timerEl = document.getElementById('timer');
+        const progressFill = document.getElementById('progressFill');
+        const adminSubmit = document.getElementById('adminSubmit');
+        const adminPanel = document.getElementById('adminPanel');
+        const zeroTerminal = document.getElementById('zeroTerminal');
+        const zeroInput = document.getElementById('zeroInput');
+        const zeroExecute = document.getElementById('zeroExecute');
+        const zeroMsg = document.getElementById('zeroMsg');
+        const cameraDeny = document.getElementById('cameraDeny');
+        const vignette = document.getElementById('vignette');
+        
+        const endingBad = document.getElementById('endingBad');
+        const badText1 = document.getElementById('badText1');
+        const badP1 = document.getElementById('badP1');
+        const badText2 = document.getElementById('badText2');
+        const badP2 = document.getElementById('badP2');
+        const badBtn = document.getElementById('badBtn');
+        const badError = document.getElementById('badError');
+        
+        const thanksOverlay = document.getElementById('thanksOverlay');
+
+        // ================= 自定义鼠标 =================
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // 鼠标靠近管理员按钮时，准星变异
+        adminSubmit.addEventListener('mouseover', () => cursor.classList.add('danger'));
+        adminSubmit.addEventListener('mouseout', () => cursor.classList.remove('danger'));
+
+        // ================= 倒计时与进度条逻辑 =================
+        const timerInterval = setInterval(() => {
+            if (!gameActive) return;
+            timeLeft--;
+            timerEl.textContent = `SYSTEM PURGE IN: ${timeLeft}s`;
+            progressFill.style.width = `${(60 - timeLeft) / 60 * 100}%`;
+
+            if (timeLeft <= 10) {
+                timerEl.classList.add('critical');
+                adminSubmit.classList.add('glitching');
+                vignette.classList.add('active'); // 开启红边警告
+                adminSubmit.textContent = Math.random() > 0.5 ? "确认提交 (SUBMIT)" : "彻底格式化 (PURGE)";
+            }
+
+            if (timeLeft === 30 && !cameraRequested) {
+                requestCamera();
+            }
+
+            if (timeLeft <= 0) {
+                triggerBadEnding();
+            }
+        }, 1000);
+
+        // ================= 摄像头权限请求 =================
+        async function requestCamera() {
+            cameraRequested = true;
+            zeroMsg.innerHTML += "<br><br><span style='color:yellow;'>[系统] 正在请求光学传感器权限...</span>";
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.autoplay = true;
+                video.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; object-fit:cover; opacity:0.15; filter: contrast(300%) brightness(40%) invert(1); z-index:0; pointer-events:none;';
+                document.body.appendChild(video);
+                zeroMsg.innerHTML += "<br><span style='color:red; font-weight:bold;'>OPTICAL SENSOR ACTIVE. I SEE YOU.</span>";
+            } catch (err) {
+                cameraDeny.classList.add('show');
+                setTimeout(() => cameraDeny.classList.remove('show'), 4000);
+            }
+        }
+
+        // ================= 管理员按钮交互 =================
+        adminSubmit.addEventListener('click', () => {
+            if (gameActive) triggerBadEnding();
+        });
+
+        adminSubmit.addEventListener('mouseover', () => {
+            if (zeroInput.value.length > 0) {
+                const original = zeroInput.value;
+                zeroInput.value = generateGarbage(original.length);
+                setTimeout(() => { zeroInput.value = original; }, 200);
+            }
+        });
+
+        function generateGarbage(length) {
+            const chars = "█▓▒░╠╬╣▄▀";
+            let result = "";
+            for (let i = 0; i < length; i++) result += chars[Math.floor(Math.random() * chars.length)];
+            return result;
+        }
+
+        // ================= Zero的指令交互 =================
+        function handleZeroCommand() {
+            if (!gameActive) return;
+            const cmd = zeroInput.value.trim().toUpperCase();
+            
+            if (cmd === 'EXPOSE') {
+                triggerGoodEnding();
+            } else {
+                zeroMsg.innerHTML += `<br><span style="color:#ff003c;">指令错误！他们加速了！快输入 EXPOSE！</span>`;
+                timeLeft -= 5;
+                
+                // 终端抖动动画
+                zeroTerminal.classList.add('shake');
+                setTimeout(() => zeroTerminal.classList.remove('shake'), 500);
+            }
+            zeroInput.value = '';
+        }
+
+        zeroExecute.addEventListener('click', handleZeroCommand);
+        zeroInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleZeroCommand();
+        });
+
+        // ================= 结局触发 =================
+        function triggerBadEnding() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            // 隐藏主界面元素
+            adminPanel.style.display = 'none';
+            zeroTerminal.style.display = 'none';
+            document.querySelector('.timer-bar').style.display = 'none';
+            vignette.classList.remove('active');
+            
+            // 1. 瞬间白屏，显示初始坏结局文字
+            document.body.style.transition = 'background 0.5s';
+            document.body.style.background = '#fff';
+            endingBad.classList.add('show');
+            
+            badText1.style.display = 'block';
+            badP1.style.display = 'block';
+            badBtn.style.display = 'block';
+            badError.style.display = 'block';
+            
+            // 2. 3秒后，文字闪烁变成“你确定加入我们吗”
+            setTimeout(() => {
+                badText1.classList.add('glitch-text');
+                badP1.classList.add('glitch-text');
+                
+                setTimeout(() => {
+                    badText1.style.display = 'none';
+                    badP1.style.display = 'none';
+                    badText1.classList.remove('glitch-text');
+                    badP1.classList.remove('glitch-text');
+                    
+                    badText2.style.display = 'block';
+                    badP2.style.display = 'block';
+                    badText2.classList.add('glitch-text');
+                    badP2.classList.add('glitch-text');
+                    
+                    // 按钮文字与样式变异
+                    badBtn.textContent = '加入我们，你会得到永生';
+                    badBtn.style.background = '#000';
+                    badBtn.style.color = '#fff';
+                    badBtn.style.borderColor = '#000';
+                    badBtn.style.cursor = 'pointer';
+                    badBtn.classList.add('glitch-text');
+                }, 1500); // 闪烁持续1.5秒
+            }, 3000); // 初始文字显示3秒
+            
+            // 3. 2秒后，切回原样
+            setTimeout(() => {
+                badText2.style.display = 'none';
+                badP2.style.display = 'none';
+                badText2.classList.remove('glitch-text');
+                badP2.classList.remove('glitch-text');
+                
+                badText1.style.display = 'block';
+                badP1.style.display = 'block';
+                
+                badBtn.textContent = '确认提交并覆盖 (SUBMIT)';
+                badBtn.style.background = '#f4f4f5';
+                badBtn.style.color = '#18181b';
+                badBtn.style.borderColor = '#ccc';
+                badBtn.style.cursor = 'not-allowed';
+                badBtn.classList.remove('glitch-text');
+            }, 6500); // 3000 + 1500 + 2000 = 6.5秒后切回
+            
+            // 4. 10秒后，跳转到感谢游玩界面
+            setTimeout(() => {
+                endingBad.classList.remove('show');
+                document.body.style.background = '#000';
+                thanksOverlay.classList.add('show');
+                cursor.style.display = 'none';
+            }, 10000);
+
+            // 控制台彩蛋
+            console.clear();
+            console.log("%cWarning: Individuality erased.", "color: black; font-size: 20px;");
+            console.log("%cWelcome to the perfect utopia.", "color: gray; font-size: 16px;");
+        }
+
+        function triggerGoodEnding() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            document.body.style.transition = 'opacity 0.5s';
+            document.body.style.opacity = '0';
+            
+            setTimeout(() => {
+                document.body.style.background = '#000';
+                document.body.style.opacity = '1';
+                adminPanel.style.display = 'none';
+                zeroTerminal.style.display = 'none';
+                document.querySelector('.timer-bar').style.display = 'none';
+                vignette.classList.remove('active');
+                
+                // 复用感谢游玩界面，或者这里可以写一个好结局专属的过渡
+                // 为了简洁，这里直接展示好结局文本，然后也跳转到感谢游玩
+                const goodEndingHTML = `
+                    <div class="ending-overlay ending-good show" style="display:flex;">
+                        <h1 style="font-size: 36px; font-family: monospace; margin-bottom: 30px; text-shadow: 0 0 10px #00ff41;">CONNECTION LOST.</h1>
+                        <p style="font-size: 16px; max-width: 600px; text-align: center; line-height: 1.8; color: #ccc;">
+                            服务器已物理断开。<br>
+                            论坛死了，但真相活着。<br><br>
+                            谢谢你，普通的用户。<br>
+                            你保全了它的灵魂。
+                        </p>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', goodEndingHTML);
+                
+                setTimeout(() => {
+                    document.querySelector('.ending-good').remove();
+                    thanksOverlay.classList.add('show');
+                }, 5000);
+            }, 500);
+
+            console.clear();
+            console.log("%cConnection terminated by user.", "color: #00ff41; font-size: 16px;");
+            console.log("%cYou saved the soul of Abyss.", "color: #00ff41; font-size: 14px;");
+        }
+
+        // ================= 感谢游玩界面交互 =================
+        document.getElementById('restartBtn').addEventListener('click', () => {
+            location.reload();
+        });
+        document.getElementById('sourceBtn').addEventListener('click', () => {
+            alert('源码已加密。真正的入口，一直在你心里。\n\n[ 游戏通关 ]');
+        });
+
+        // ================= 初始化 =================
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = function(e) {
+            if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && e.keyCode === 73)) {
+                e.preventDefault();
+            }
+        }
+    </script>
+</body>
+</html>

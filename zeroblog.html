@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypted Channel | Zero</title>
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --terminal-bg: #111111;
+            --text-primary: #00ff41;
+            --text-secondary: #008f11;
+            --text-alert: #ff3333;
+            --text-user: #00ccff;
+            --border-color: #333;
+            --font-mono: 'Courier New', Consolas, Monaco, 'Andale Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* 终端容器 */
+        .terminal {
+            width: 90%;
+            max-width: 800px;
+            height: 85vh;
+            background: var(--terminal-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.1), inset 0 0 10px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 扫描线效果 */
+        .terminal::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 4px 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 头部状态栏 */
+        .header {
+            background: #1a1a1a;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            z-index: 11;
+        }
+
+        .header-title {
+            color: var(--text-primary);
+            text-shadow: 0 0 5px var(--text-primary);
+            font-weight: bold;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            background: var(--text-alert);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .lang-toggle {
+            background: transparent;
+            border: 1px solid var(--text-secondary);
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .lang-toggle:hover {
+            background: var(--text-secondary);
+            color: #000;
+        }
+
+        /* 消息区域 */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 5;
+            scrollbar-width: thin;
+            scrollbar-color: var(--text-secondary) transparent;
+        }
+
+        .messages::-webkit-scrollbar { width: 6px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: var(--text-secondary); border-radius: 3px; }
+
+        .msg {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 4px;
+            line-height: 1.5;
+            font-size: 14px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .msg-zero {
+            align-self: flex-start;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 3px solid var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .msg-user {
+            align-self: flex-end;
+            background: rgba(0, 204, 255, 0.05);
+            border-right: 3px solid var(--text-user);
+            color: var(--text-user);
+        }
+
+        .msg-system {
+            align-self: center;
+            background: transparent;
+            color: #666;
+            font-size: 12px;
+            font-style: italic;
+            border: none;
+        }
+
+        .msg-sender {
+            font-size: 12px;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+
+        /* 光标闪烁 */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: var(--text-primary);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* 输入区域 */
+        .input-area {
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            background: #151515;
+            display: flex;
+            gap: 10px;
+            z-index: 11;
+        }
+
+        .prompt {
+            color: var(--text-primary);
+            font-size: 16px;
+            line-height: 32px;
+        }
+
+        #userInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-user);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            outline: none;
+            caret-color: var(--text-user);
+        }
+
+        #sendBtn {
+            background: transparent;
+            border: 1px solid var(--text-primary);
+            color: var(--text-primary);
+            padding: 5px 15px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            transition: all 0.2s;
+        }
+
+        #sendBtn:hover {
+            background: var(--text-primary);
+            color: #000;
+        }
+        
+        #sendBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="terminal">
+    <!-- 头部 -->
+    <div class="header">
+        <div class="header-title" data-i18n="title">加密信道 [Zero]</div>
+        <div class="header-controls">
+            <span><span class="status-dot"></span><span data-i18n="status">连接中...</span></span>
+            <button class="lang-toggle" id="langBtn">EN / 中</button>
+        </div>
+    </div>
+
+    <!-- 消息区 -->
+    <div class="messages" id="messages"></div>
+
+    <!-- 输入区 -->
+    <div class="input-area">
+        <span class="prompt">></span>
+        <input type="text" id="userInput" data-i18n-placeholder="placeholder" placeholder="输入指令或消息..." autocomplete="off">
+        <button id="sendBtn" data-i18n="send">发送</button>
+    </div>
+</div>
+
+<script>
+    // ================= i18n 国际化字典 =================
+    const i18n = {
+        zh: {
+            title: "加密信道 [Zero]",
+            status: "已连接 (端到端加密)",
+            placeholder: "输入指令或消息... (试试 'help')",
+            send: "发送",
+            lang_btn: "EN / 中",
+            zero_name: "Zero",
+            user_name: "Guest",
+            system_connect: "[ 系统 ] 正在建立安全隧道...",
+            system_success: "[ 系统 ] 隧道已建立。绕过防火墙成功。",
+            zero_welcome_1: "你终于来了。别出声，他们在监听。",
+            zero_welcome_2: "你看到那个404页面了吧？那是他们掩盖罪行的遮羞布。",
+            zero_welcome_3: "输入 'help' 看看我能帮你什么。记住，别相信管理员的任何话。",
+            zero_help: "可用指令：\n- 'help': 显示此菜单\n- 'whoami': 查看你的真实身份\n- 'status': 查看服务器状态\n- 'truth': 获取被隐藏的真相碎片",
+            zero_whoami: "你以为你只是个普通用户？看看你的浏览器指纹。他们早就标记了你。输入 'truth' 来证明你还有救。",
+            zero_status: "主数据库：被污染 (87%)\n管理员进程：正在执行 'format.exe'\nZero进程：潜伏中...",
+            zero_truth: "真相不在服务器里，在你的本地缓存里。按 F12，去 Application -> Local Storage 找 'abyss_ghost'。快，他们要切断连接了！",
+            zero_default: "指令无法识别。保持警惕，输入 'help'。",
+            zero_disconnect: "[ 连接中断 ] 他们发现我们了。记住那个坐标..."
+        },
+        en: {
+            title: "Encrypted Channel [Zero]",
+            status: "Connected (E2E Encrypted)",
+            placeholder: "Type command or message... (try 'help')",
+            send: "Send",
+            lang_btn: "EN / 中",
+            zero_name: "Zero",
+            user_name: "Guest",
+            system_connect: "[ System ] Establishing secure tunnel...",
+            system_success: "[ System ] Tunnel established. Firewall bypassed.",
+            zero_welcome_1: "You're finally here. Keep quiet, they are listening.",
+            zero_welcome_2: "You saw that 404 page, right? That's their fig leaf to cover up their crimes.",
+            zero_welcome_3: "Type 'help' to see what I can do for you. Remember, don't trust anything the admin says.",
+            zero_help: "Available commands:\n- 'help': Show this menu\n- 'whoami': Check your real identity\n- 'status': Check server status\n- 'truth': Get hidden truth fragments",
+            zero_whoami: "You think you're just a normal user? Check your browser fingerprint. They've already marked you. Type 'truth' to prove you can still be saved.",
+            zero_status: "Main DB: Corrupted (87%)\nAdmin Process: Executing 'format.exe'\nZero Process: Lurking...",
+            zero_truth: "The truth isn't on the server, it's in your local cache. Press F12, go to Application -> Local Storage and find 'abyss_ghost'. Hurry, they're cutting the connection!",
+            zero_default: "Command not recognized. Stay alert, type 'help'.",
+            zero_disconnect: "[ Connection Lost ] They found us. Remember the coordinates..."
+        }
+    };
+
+    let currentLang = 'zh';
+    let isTyping = false;
+
+    // ================= DOM 元素 =================
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const langBtn = document.getElementById('langBtn');
+    const statusEl = document.querySelector('[data-i18n="status"]');
+
+    // ================= 核心功能函数 =================
+
+    // 切换语言
+    function switchLang() {
+        currentLang = currentLang === 'zh' ? 'en' : 'zh';
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (i18n[currentLang][key]) el.textContent = i18n[currentLang][key];
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (i18n[currentLang][key]) el.placeholder = i18n[currentLang][key];
+        });
+        statusEl.textContent = i18n[currentLang].status;
+        langBtn.textContent = i18n[currentLang].lang_btn;
+    }
+
+    // 添加消息到界面
+    function addMessage(text, type = 'zero', isSystem = false) {
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('msg', `msg-${type}`);
+        if (isSystem) msgDiv.classList.add('msg-system');
+
+        if (!isSystem) {
+            const sender = document.createElement('div');
+            sender.classList.add('msg-sender');
+            sender.textContent = type === 'zero' ? i18n[currentLang].zero_name : i18n[currentLang].user_name;
+            msgDiv.appendChild(sender);
+        }
+
+        const content = document.createElement('div');
+        content.classList.add('msg-content');
+        msgDiv.appendChild(content);
+
+        messagesEl.appendChild(msgDiv);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+
+        return content;
+    }
+
+    // 打字机效果
+    async function typeText(element, text, speed = 30) {
+        isTyping = true;
+        sendBtn.disabled = true;
+        inputEl.disabled = true;
+        
+        const cursor = document.createElement('span');
+        cursor.classList.add('cursor');
+        element.appendChild(cursor);
+
+        for (let i = 0; i < text.length; i++) {
+            await new Promise(resolve => setTimeout(resolve, speed));
+            // 处理换行符
+            if (text[i] === '\n') {
+                element.insertBefore(document.createElement('br'), cursor);
+            } else {
+                element.insertBefore(document.createTextNode(text[i]), cursor);
+            }
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+        
+        cursor.remove();
+        isTyping = false;
+        sendBtn.disabled = false;
+        inputEl.disabled = false;
+        inputEl.focus();
+    }
+
+    // Zero 说话
+    async function zeroSpeak(key) {
+        const text = i18n[currentLang][key] || i18n[currentLang].zero_default;
+        const contentEl = addMessage('', 'zero');
+        await typeText(contentEl, text, 40);
+    }
+
+    // 处理用户输入
+    async function handleInput() {
+        const text = inputEl.value.trim();
+        if (!text || isTyping) return;
+
+        // 显示用户消息
+        const userContent = addMessage(text, 'user');
+        userContent.textContent = text;
+        inputEl.value = '';
+
+        // 模拟网络延迟
+        await new Promise(r => setTimeout(r, 500));
+
+        // 匹配指令
+        const cmd = text.toLowerCase();
+        if (cmd === 'help') {
+            await zeroSpeak('zero_help');
+        } else if (cmd === 'whoami') {
+            await zeroSpeak('zero_whoami');
+        } else if (cmd === 'status') {
+            await zeroSpeak('zero_status');
+        } else if (cmd === 'truth') {
+            await zeroSpeak('zero_truth');
+            // 触发ARG下一步：在本地存储写入线索
+            localStorage.setItem('abyss_ghost', 'b64:aHR0cHM6Ly9rZGtkZG5tdjYzMi5naXRodWIuaW8vaW5kZXhDMG1FU3BhZTBuTi5odG1s');
+            setTimeout(() => zeroSpeak('zero_disconnect'), 2000);
+        } else {
+            await zeroSpeak('zero_default');
+        }
+    }
+
+    // ================= 初始化 =================
+    async function init() {
+        // 系统提示
+        const sys1 = addMessage(i18n[currentLang].system_connect, 'system', true);
+        await new Promise(r => setTimeout(r, 1000));
+        const sys2 = addMessage(i18n[currentLang].system_success, 'system', true);
+        
+        await new Promise(r => setTimeout(r, 800));
+
+        // Zero 开场白
+        await zeroSpeak('zero_welcome_1');
+        await new Promise(r => setTimeout(r, 500));
+        await zeroSpeak('zero_welcome_2');
+        await new Promise(r => setTimeout(r, 500));
+        await zeroSpeak('zero_welcome_3');
+
+        inputEl.focus();
+    }
+
+    // 事件监听
+    langBtn.addEventListener('click', switchLang);
+    sendBtn.addEventListener('click', handleInput);
+    inputEl.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleInput();
+    });
+
+    // 启动
+    init();
+</script>
+
+</body>
+</html>
