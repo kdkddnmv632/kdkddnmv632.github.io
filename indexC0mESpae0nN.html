@@ -358,6 +358,11 @@
     </style>
 </head>
 <body>
+       <!-- 背景音乐 -->
+    <audio id="bgm" autoplay>
+        <source src="bgm.mp3" type="audio/mpeg">
+        <source src="bgm.ogg" type="audio/ogg">
+    </audio>
 
     <div class="custom-cursor" id="cursor"></div>
     <div class="glitch-bg"></div>
@@ -427,8 +432,10 @@
         <img src="C0mESpaCE0N/gongzhonghao.jpg" alt="公众号">
         <img src="C0mESpaCE0N/zanshangma.jpg" alt="赞赏码">    
     </div>
-
+	<script type="text/javascript" src="miusc.js">
+	</script>
     <script>
+
         // ================= 核心变量 =================
         let timeLeft = 60;
         let gameActive = true;
@@ -687,6 +694,7 @@
                 e.preventDefault();
             }
         }
-    </script>
+
+        </script>
 </body>
 </html>

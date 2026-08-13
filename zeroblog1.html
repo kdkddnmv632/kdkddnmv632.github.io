@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zero's Blog</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --card-bg: #111111;
+            --text-primary: #00ff41;
+            --text-secondary: #008f11;
+            --text-tertiary: #666;
+            --border: #333;
+            --accent: #00ff41;
+            --danger: #ff003c;
+            --warning: #ffcc00;
+        }
+
+        body {
+            font-family: 'Courier New', Consolas, Monaco, monospace;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 扫描线背景 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 密码门页面 */
+        .gate {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .gate-card {
+            background: var(--card-bg);
+            border: 2px solid var(--text-primary);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.5);
+            padding: 48px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .gate-card::before {
+            content: "ENCRYPTED ACCESS";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg);
+            padding: 0 15px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+        .gate-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            border: 3px solid var(--text-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        .gate-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            text-shadow: 0 0 10px var(--text-primary);
+            letter-spacing: 3px;
+        }
+
+        .gate-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            letter-spacing: 1px;
+        }
+
+        .gate-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #000;
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .gate-input:focus {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+        }
+
+        .gate-input.error {
+            border-color: var(--danger);
+            animation: shake 0.4s;
+            box-shadow: 0 0 15px rgba(255, 0, 60, 0.4);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .gate-btn {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 2px solid var(--text-primary);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: bold;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .gate-btn:hover {
+            background: var(--text-primary);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+        }
+
+        .gate-hint {
+            margin-top: 24px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        .gate-error {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+            text-shadow: 0 0 5px var(--danger);
+        }
+
+        .gate-error.show {
+            display: block;
+            animation: glitch 0.3s;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        /* 博客主界面 */
+        .blog {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .blog.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .blog-header {
+            margin-bottom: 48px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--text-primary);
+            box-shadow: 0 2px 10px rgba(0, 255, 65, 0.3);
+        }
+
+        .blog-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            letter-spacing: 5px;
+            text-shadow: 0 0 15px var(--text-primary);
+            animation: glitchText 3s infinite;
+        }
+
+        @keyframes glitchText {
+            0%, 95%, 100% { transform: translate(0); text-shadow: 0 0 15px var(--text-primary); }
+            96% { transform: translate(-2px, 1px); text-shadow: 2px 0 var(--danger), -2px 0 cyan; }
+            97% { transform: translate(2px, -1px); text-shadow: -2px 0 var(--danger), 2px 0 cyan; }
+        }
+
+        .blog-meta {
+            color: var(--text-secondary);
+            font-size: 13px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            letter-spacing: 1px;
+        }
+
+        .blog-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .blog-intro {
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(0, 255, 65, 0.03);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--text-primary);
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .blog-intro strong {
+            color: var(--text-primary);
+            text-shadow: 0 0 5px var(--text-primary);
+        }
+
+        /* 日志列表 */
+        .post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .post-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .post-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--text-secondary);
+            transition: all 0.3s;
+        }
+
+        .post-item:hover {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            transform: translateX(5px);
+        }
+
+        .post-item:hover::before {
+            background: var(--text-primary);
+            width: 5px;
+            box-shadow: 0 0 10px var(--text-primary);
+        }
+
+        .post-item.important {
+            border-color: var(--danger);
+        }
+
+        .post-item.important::before {
+            background: var(--danger);
+        }
+
+        .post-item.important:hover {
+            box-shadow: 0 0 20px rgba(255, 0, 60, 0.3);
+        }
+
+        .post-date {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+        }
+
+        .post-excerpt {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .post-tags {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .post-tag {
+            padding: 4px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        .post-tag.important {
+            border-color: var(--danger);
+            color: var(--danger);
+            text-shadow: 0 0 5px var(--danger);
+        }
+
+        /* 日志详情 */
+        .post-detail {
+            display: none;
+        }
+
+        .post-detail.show {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 24px;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 2px;
+        }
+
+        .back-btn:hover {
+            text-shadow: 0 0 10px var(--text-primary);
+        }
+
+        .post-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 40px;
+            position: relative;
+        }
+
+        .post-content::before {
+            content: "LOG ENTRY";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--bg);
+            padding: 0 10px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            letter-spacing: 2px;
+        }
+
+        .post-content h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            text-shadow: 0 0 10px var(--text-primary);
+            letter-spacing: 2px;
+        }
+
+        .post-content .meta {
+            color: var(--text-tertiary);
+            font-size: 13px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border);
+            letter-spacing: 1px;
+        }
+
+        .post-body {
+            font-size: 15px;
+            line-height: 1.9;
+            color: var(--text-secondary);
+        }
+
+        .post-body p {
+            margin-bottom: 20px;
+        }
+
+        .post-body .zero-note {
+            background: rgba(0, 255, 65, 0.05);
+            padding: 16px;
+            border-left: 3px solid var(--text-primary);
+            margin: 20px 0;
+            font-size: 13px;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+            box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.1);
+        }
+
+        .post-body .hidden-text {
+            color: var(--bg);
+            user-select: auto;
+            cursor: default;
+        }
+
+        .post-body .hidden-text::selection {
+            background: var(--text-primary);
+            color: #000;
+        }
+
+        /* 页脚 */
+        .blog-footer {
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .blog-footer .warning {
+            color: var(--warning);
+            margin-bottom: 8px;
+            text-shadow: 0 0 5px var(--warning);
+        }
+
+        /* 响应式 */
+        @media (max-width: 640px) {
+            .gate-card {
+                padding: 32px 24px;
+            }
+
+            .blog {
+                padding: 40px 20px;
+            }
+
+            .post-content {
+                padding: 24px;
+            }
+
+            .blog-title {
+                font-size: 24px;
+            }
+        }
+            .button {
+            padding: 20px 30px;
+            background-color:rgba(6, 97, 32, 0.74);
+            color: rgba(6, 125, 4, 0.684);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;s
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 密码门 -->
+    <div class="gate" id="gate">
+        <div class="gate-card">
+            <div class="gate-icon">🔐</div>
+            <h1 class="gate-title">ENCRYPTED LOGS</h1>
+            <p class="gate-subtitle">ACCESS RESTRICTED · AUTHORIZATION REQUIRED</p>
+            
+            <input 
+                type="password" 
+                class="gate-input" 
+                id="passwordInput"
+                placeholder="ENTER ACCESS KEY..."
+                autocomplete="off"
+            >
+            <div class="gate-error" id="gateError">ACCESS DENIED · INVALID CREDENTIALS</div>
+            <button class="gate-btn" onclick="checkPassword()">DECRYPT</button>
+            
+            <div class="gate-hint">
+                HINT: 某人的生日 + 姓名缩写
+            </div>
+        </div>
+    </div>
+
+    <!-- 博客主界面 -->
+    <div class="blog" id="blog">
+        <div class="blog-header">
+            <h1 class="blog-title">ZERO'S BLOG</h1>
+            <div class="blog-meta">
+            </div>
+            <form action="zeroblog.html" method="get">
+            <input type="submit" value="聊天" class="button">
+            </form>
+            <div class="blog-intro">
+                <strong>TO WHOEVER FINDS THIS:</strong><br>
+                如果你能进入这个终端，说明你已经完成90%。快点击聊天界面里找我。<br><br>
+                <span style="color: var(--text-tertiary); font-size: 13px;">—— ZERO, JUNE 2026</span>
+            </div>
+        </div>
+        
+
+        <!-- 日志列表 -->
+        <div class="post-list" id="postList">
+            <!-- 日志项会通过JS动态生成 -->
+        </div>
+
+        <!-- 日志详情 -->
+        <div class="post-detail" id="postDetail">
+            <button class="back-btn" onclick="showList()">← BACK TO LIST</button>
+            <div class="post-content" id="postContent">
+                <!-- 日志内容会通过JS动态生成 -->
+            </div>
+        </div>
+
+        <div class="blog-footer">
+            <p class="warning">⚠ WARNING: THIS TERMINAL WILL SELF-DESTRUCT ON 2026-08-15 00:00:00</p>
+            <p>"只要还有人记得，我就没有真正消失。"</p>
+            <p style="margin-top: 8px;">© 2026 ZERO | GHOST PROCESS #0001</p>
+        </div>
+    </div>
+
+    <script>
+        // 密码验证
+        const correctPassword = "19970327czy";
+        
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('gateError');
+            const pwd = input.value.trim();
+            
+            if (pwd === correctPassword) {
+                document.getElementById('gate').style.display = 'none';
+                document.getElementById('blog').classList.add('show');
+                renderPostList();
+                
+                // 控制台彩蛋
+                console.clear();
+                console.log("%c╔════════════════════════════════════╗", "color: #00ff41;");
+                console.log("%c║   ACCESS GRANTED · WELCOME BACK   ║", "color: #00ff41;");
+                console.log("%c╚════════════════════════════════════╝", "color: #00ff41;");
+                console.log("%c欢迎回来。", "color: #00ff41; font-size: 16px;");
+                console.log("%c我知道你会找到这里的。", "color: #008f11; font-size: 14px;");
+            } else {
+                input.classList.add('error');
+                error.classList.add('show');
+                setTimeout(() => {
+                    input.classList.remove('error');
+                }, 400);
+            }
+        }
+
+        // 回车键提交
+        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        // 日志数据
+        const posts = [
+        ];
+
+        // 渲染日志列表
+        function renderPostList() {
+            const list = document.getElementById('postList');
+            list.innerHTML = '';
+            
+            posts.forEach(post => {
+                const item = document.createElement('div');
+                item.className = `post-item ${post.important ? 'important' : ''}`;
+                item.onclick = () => showPost(post.id);
+                item.innerHTML = `
+                    <div class="post-date">${post.date}</div>
+                    <div class="post-title">${post.title}</div>
+                    <div class="post-excerpt">${post.excerpt}</div>
+                    <div class="post-tags">
+                        ${post.tags.map(tag => `
+                            <span class="post-tag ${tag === '重要' ? 'important' : ''}">${tag.toUpperCase()}</span>
+                        `).join('')}
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // 显示单篇日志
+        function showPost(id) {
+            const post = posts.find(p => p.id === id);
+            if (!post) return;
+            
+            document.getElementById('postList').style.display = 'none';
+            const detail = document.getElementById('postDetail');
+            const content = document.getElementById('postContent');
+            
+            content.innerHTML = `
+                <h1>${post.title}</h1>
+                <div class="meta">${post.date} · ZERO</div>
+                <div class="post-body">${post.content}</div>
+            `;
+            
+            detail.classList.add('show');
+            window.scrollTo(0, 0);
+        }
+
+        // 返回列表
+        function showList() {
+            document.getElementById('postDetail').classList.remove('show');
+            document.getElementById('postList').style.display = 'flex';
+        }
+
+        // 页面加载时聚焦密码输入框
+        window.addEventListener('load', () => {
+            document.getElementById('passwordInput').focus();
+        });
+    </script>
+
+
+</body>
+</html>
