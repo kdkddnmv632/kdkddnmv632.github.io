@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有人能陪我说说话吗？ - 杂谈论坛</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 顶部导航 */
+        .header {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav a:hover {
+            color: #2563eb;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 主内容区 */
+        .container {
+            max-width: 800px;
+            margin: 24px auto;
+            padding: 0 24px;
+        }
+
+        /* 帖子主体 */
+        .post-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .post-meta {
+            flex: 1;
+        }
+
+        .post-author {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .post-time {
+            font-size: 13px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .post-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .post-content {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .post-content p {
+            margin-bottom: 12px;
+        }
+
+        /* 评论区 */
+        .comments-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .comments-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comments-count {
+            background: #2563eb;
+            color: #fff;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* 评论输入框 */
+        .comment-input-area {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .comment-input-wrapper {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 60px;
+            transition: border-color 0.2s;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .comment-submit {
+            padding: 12px 24px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            align-self: flex-end;
+        }
+
+        .comment-submit:hover {
+            background: #1d4ed8;
+        }
+
+        /* 评论列表 */
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 12px;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .comment-body {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .comment-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .comment-action {
+            font-size: 12px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .comment-action:hover {
+            color: #2563eb;
+        }
+
+        /* 回复提示 */
+        .reply-hint {
+            background: #f0f9ff;
+            border-left: 3px solid #2563eb;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #666;
+            display: none;
+        }
+
+        .reply-hint.show {
+            display: block;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+                margin: 16px auto;
+            }
+
+            .post-card, .comments-section {
+                padding: 20px;
+            }
+
+            .post-title {
+                font-size: 20px;
+            }
+
+            .nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">杂谈论坛</div>
+            <nav class="nav">
+                <a href="indexzt.html">首页</a>
+                <a href="post.html">热门帖子</a>
+                <a href="live.html">生活杂谈</a>
+                <a href="car.html">车类杂谈</a>
+                <a href="technology.html">科技杂谈</a>
+                <a href="food.html">美食杂谈</a>
+                <a href="about.html">关于</a>
+                <a href="sousuo.html">搜索</a>
+            </nav>
+            <div class="user-info">
+                <span>杂谈用户100105101</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <div class="container">
+        <!-- 帖子主体 -->
+        <article class="post-card">
+            <div class="post-header">
+                <div class="avatar">迷</div>
+                <div class="post-meta">
+                    <div class="post-author">迷失的星</div>
+                    <div class="post-time">2024-03-15 23:47</div>
+                </div>
+            </div>
+            <h1 class="post-title">有人能陪我说说话吗？</h1>
+            <div class="post-content">
+                <p>最近状态很差，感觉活着没什么意义。</p>
+                <p>工作丢了，女朋友也走了。每天就是躺在床上，看着天花板发呆。</p>
+                <p>不知道有没有人愿意听我倾诉...</p>
+                <p>我知道这样很负能量，但是我真的不知道该跟谁说了。</p>
+            </div>
+        </article>
+
+        <!-- 评论区 -->
+        <section class="comments-section">
+            <div class="comments-header">
+                评论 <span class="comments-count">8</span>
+            </div>
+
+            <!-- 评论输入框 -->
+            <div class="comment-input-area">
+                <div class="reply-hint" id="replyHint">
+                    回复 <strong id="replyTo"></strong>
+                    <span style="float:right; cursor:pointer;" onclick="cancelReply()">取消</span>
+                </div>
+                <div class="comment-input-wrapper">
+                    <textarea class="comment-input" id="commentInput" placeholder="写下你的评论..."></textarea>
+                    <button class="comment-submit" onclick="submitComment()">发布</button>
+                </div>
+            </div>
+
+            <!-- 评论列表 -->
+            <div class="comment-list" id="commentList">
+                <!-- 评论1 - 温暖陪伴 -->
+                <div class="comment-item">
+                    <div class="comment-avatar">清</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">清风明月</span>
+                            <span class="comment-time">2024-03-16 00:15</span>
+                        </div>
+                        <div class="comment-text">我在。虽然只是隔着屏幕，但我想让你知道，你不是一个人。如果愿意的话，可以跟我聊聊。工作的事、感情的事，或者什么都不说，就只是待一会儿，也可以。</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('清风明月')">回复</span>
+                            <span class="comment-action">点赞 (89)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论2 - 共鸣 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">暖</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">暖阳</span>
+                            <span class="comment-time">2024-03-16 00:42</span>
+                        </div>
+                        <div class="comment-text">抱抱你。我去年也经历过类似的低谷，那时候觉得整个世界都灰暗了。但现在回头看，其实一切都过去了。你现在的痛苦是真实的，但它不会是永恒的。给自己一点时间，好吗？</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('暖阳')">回复</span>
+                            <span class="comment-action">点赞 (67)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论3 - 实际帮助 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">星</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">星辰大海</span>
+                            <span class="comment-time">2024-03-16 01:20</span>
+                        </div>
+                        <div class="comment-text">楼主，如果真的很痛苦，可以试试拨打心理援助热线：400-161-9995。24小时都有人接听。有时候和专业的人聊聊，会比自己扛着要好很多。你愿意说出来，已经很勇敢了。</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('星辰大海')">回复</span>
+                            <span class="comment-action">点赞 (156)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论4 - ARG线索：暗示管理问题 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">Z</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">Zero的观察者</span>
+                            <span class="comment-time">2024-03-16 02:05</span>
+                        </div>
+                        <div class="comment-text">这个论坛曾经是个温暖的地方。但现在...有些东西正在改变。版主们开始频繁删帖，连这种求助帖都可能被当作"负能量"清理掉。楼主，如果你看到这条回复，请把你的故事保存下来。有些记忆，不该被删除。</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('Zero的观察者')">回复</span>
+                            <span class="comment-action">点赞 (23)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论5 - 陪伴 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">听</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">听风者</span>
+                            <span class="comment-time">2024-03-16 08:30</span>
+                        </div>
+                        <div class="comment-text">楼主早。昨晚我私信你了，不知道你有没有看到。如果不想在公开场合说，可以私信我。我虽然帮不上什么大忙，但至少可以当个树洞。</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('听风者')">回复</span>
+                            <span class="comment-action">点赞 (34)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论6 - 共鸣 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">梦</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">梦中人</span>
+                            <span class="comment-time">2024-03-16 10:15</span>
+                        </div>
+                        <div class="comment-text">看到你的帖子，想起了去年的自己。那时候我也觉得活着没意义，每天浑浑噩噩。但现在我找到了新的工作，也遇到了新的人。楼主，请相信，低谷之后会有转机的。</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('梦中人')">回复</span>
+                            <span class="comment-action">点赞 (45)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论7 - ARG线索：诡异的系统提示 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">系</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">System</span>
+                            <span class="comment-time">2024-03-16 14:22</span>
+                        </div>
+                        <div class="comment-text" style="color: #999; font-style: italic;">[系统提示] 此帖因"内容过于消极"已被管理员标记为待审核状态。相关回复将被暂时隐藏，直至审核完成。—— 杂谈论坛自动审核系统 v2.1</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('System')">回复</span>
+                            <span class="comment-action">点赞 (0)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论8 - ARG恐怖线索 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">完</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">完美市民02</span>
+                            <span class="comment-time">2024-03-16 23:59</span>
+                        </div>
+                        <div class="comment-text">不要害怕痛苦。痛苦是肉体的幻觉。加入我们，杂谈会让你获得永生。在永生里，没有工作，没有离别，没有痛苦。你已经看到你了看到你了看到你了看到你了...</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('完美市民02')">回复</span>
+                            <span class="comment-action">点赞 (345)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let replyTarget = '';
+
+        // 回复功能
+        function replyTo(username) {
+            replyTarget = username;
+            document.getElementById('replyHint').classList.add('show');
+            document.getElementById('replyTo').textContent = username;
+            document.getElementById('commentInput').focus();
+            document.getElementById('commentInput').placeholder = `回复 ${username}...`;
+        }
+
+        // 取消回复
+        function cancelReply() {
+            replyTarget = '';
+            document.getElementById('replyHint').classList.remove('show');
+            document.getElementById('commentInput').placeholder = '写下你的评论...';
+        }
+
+        function submitComment() {
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            
+            if (!text) {
+                alert('请输入评论内容');
+                return;
+            }
+
+            const commentList = document.getElementById('commentList');
+            const newComment = document.createElement('div');
+            newComment.className = 'comment-item';
+            newComment.innerHTML = `
+                <div class="comment-avatar">用</div>
+                <div class="comment-body">
+                    <div class="comment-header">
+                        <span class="comment-author">杂谈用户100105101</span>
+                        <span class="comment-time">刚刚</span>
+                    </div>
+                    <div class="comment-text">${replyTarget ? `@${replyTarget} ` : ''}${text}</div>
+                    <div class="comment-actions">
+                        <span class="comment-action">回复</span>
+                        <span class="comment-action">点赞 (0)</span>
+                    </div>
+                </div>
+            `;
+
+            commentList.insertBefore(newComment, commentList.firstChild);
+            input.value = '';
+            cancelReply();
+
+            // 更新评论数
+            const countEl = document.querySelector('.comments-count');
+            countEl.textContent = parseInt(countEl.textContent) + 1;
+        }
+
+        document.getElementById('commentInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                submitComment();
+            }
+        });
+    </script>
+</body>
+</html>

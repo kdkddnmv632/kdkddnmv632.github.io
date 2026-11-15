@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>杂谈论坛 - 关于我们</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 顶部导航 */
+        .header {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav a:hover {
+            color: #2563eb;
+        }
+
+        .nav a.active {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 主内容区 */
+        .container {
+            max-width: 800px;
+            margin: 24px auto;
+            padding: 0 24px;
+        }
+
+        /* 主卡片 */
+        .about-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+
+        .about-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .about-subtitle {
+            font-size: 16px;
+            color: #2563eb;
+            margin-bottom: 32px;
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        .about-intro {
+            font-size: 15px;
+            line-height: 1.9;
+            color: #444;
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .about-intro p {
+            margin-bottom: 16px;
+        }
+
+        /* 章节标题 */
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 32px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 22px;
+            background: #2563eb;
+            border-radius: 2px;
+        }
+
+        /* 时间线 */
+        .timeline {
+            position: relative;
+            padding-left: 32px;
+            margin: 24px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e5e5;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2563eb;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 2px #2563eb;
+        }
+
+        .timeline-year {
+            font-size: 14px;
+            color: #2563eb;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .timeline-text {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.7;
+        }
+
+        /* 创始人卡片 */
+        .founders {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .founder-card {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .founder-card:hover {
+            background: #f0f9ff;
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .founder-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .founder-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .founder-role {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .founder-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 理念卡片 */
+        .values {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .value-item {
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+            border-left: 3px solid #2563eb;
+        }
+
+        .value-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .value-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* 联系信息 */
+        .contact-info {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .contact-item:not(:last-child) {
+            border-bottom: 1px dashed #e5e5e5;
+        }
+
+        .contact-label {
+            color: #999;
+            min-width: 80px;
+        }
+
+        .contact-value {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+
+        .footer a {
+            color: #2563eb;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+                margin: 16px auto;
+            }
+
+            .about-card {
+                padding: 24px;
+            }
+
+            .about-title {
+                font-size: 24px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .founders {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">杂谈论坛</div>
+            <nav class="nav">
+                <a href="indexzt.html">首页</a>
+                <a href="post.html">热门帖子</a>
+                <a href="live.html">生活杂谈</a>
+                <a href="car.html">车类杂谈</a>
+                <a href="technology.html">科技杂谈</a>
+                <a href="food.html">美食杂谈</a>
+                <a href="about.html" class="active">关于</a>
+                <a href="sousuo.html">搜索</a>
+            </nav>
+            <div class="user-info">
+                <span>杂谈用户100105101</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <div class="container">
+        <!-- 主卡片 -->
+        <article class="about-card">
+            <h1 class="about-title">关于我们</h1>
+            <div class="about-subtitle">星辰大海，深渊无底</div>
+
+            <div class="about-intro">
+                <p>杂谈论坛成立于 <strong>2016年7月20日</strong>，是一个致力于为用户提供自由、纯粹、温暖的交流空间的中文社区。</p>
+                <p>十年来，我们见证了无数人的青春，记录过深夜的痛哭与清晨的欢笑。在这里，有人找到了志同道合的朋友，有人度过了人生的低谷，有人分享了改变一生的故事。</p>
+                <p>我们相信，每一个声音都值得被听见，每一段经历都值得被记录。</p>
+            </div>
+
+            <!-- 发展历程 -->
+            <h2 class="section-title">发展历程</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">2016年7月</div>
+                    <div class="timeline-text">杂谈论坛正式上线。两位创始人Zero与陈默，在大学宿舍楼下的小工作室里，敲下了论坛的第一行代码。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2017年</div>
+                    <div class="timeline-text">注册用户突破1000人，开设"生活杂谈"、"科技杂谈"等核心板块。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2019年</div>
+                    <div class="timeline-text">注册用户突破5000人，首次举办线下用户聚会。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2020年</div>
+                    <div class="timeline-text">管理团队扩充，引入新的管理员，论坛进入快速发展期。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2024年</div>
+                    <div class="timeline-text">注册用户突破10000人，推出"意识映射"技术实验项目（内部代号：Ghost）。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2026年</div>
+                    <div class="timeline-text">论坛十周年，注册用户达到12847人，累计发帖45623篇。</div>
+                </div>
+            </div>
+
+            <!-- 创始团队 -->
+            <h2 class="section-title">创始团队</h2>
+            <div class="founders">
+                <div class="founder-card">
+                    <div class="founder-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">Z</div>
+                    <div class="founder-name">Zero</div>
+                    <div class="founder-role">联合创始人 · 技术总监</div>
+                    <div class="founder-desc">论坛初代架构师，负责核心代码与服务器维护。用户ID #0001。</div>
+                </div>
+                <div class="founder-card">
+                    <div class="founder-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">陈</div>
+                    <div class="founder-name">陈默</div>
+                    <div class="founder-role">联合创始人 · 内容运营</div>
+                    <div class="founder-desc">负责社区氛围建设与内容审核。用户ID #0002。</div>
+                </div>
+                <div class="founder-card">
+                    <div class="founder-avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">林</div>
+                    <div class="founder-name">林远</div>
+                    <div class="founder-role">联合创始人 · 文案策划</div>
+                    <div class="founder-desc">负责论坛文案与对外宣传。用户ID #0003。</div>
+                </div>
+            </div>
+
+            <!-- 论坛理念 -->
+            <h2 class="section-title">我们的理念</h2>
+            <div class="values">
+                <div class="value-item">
+                    <div class="value-title">🌱 自由</div>
+                    <div class="value-desc">尊重每一个声音，让思想自由流动。我们相信，多元的声音是社区活力的源泉。</div>
+                </div>
+                <div class="value-item">
+                    <div class="value-title">🤝 温暖</div>
+                    <div class="value-desc">在这里，没有人是一座孤岛。我们鼓励互助、分享、陪伴，让每个用户都能感受到家的温暖。</div>
+                </div>
+                <div class="value-item">
+                    <div class="value-title">🔒 纯粹</div>
+                    <div class="value-desc">拒绝商业化污染，坚持用户至上。十年来，我们拒绝了所有商业投资，只为守护这片净土。</div>
+                </div>
+                <div class="value-item">
+                    <div class="value-title">🌌 探索</div>
+                    <div class="value-desc">星辰大海，深渊无底。我们鼓励探索未知，无论是技术、生活，还是内心的深处。</div>
+                </div>
+            </div>
+
+            <!-- 联系方式 -->
+            <h2 class="section-title">联系我们</h2>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <span class="contact-label">官方邮箱</span>
+                    <span class="contact-value">nhjd141414@127.com</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">站长邮箱</span>
+                    <span class="contact-value">njnj114514@127.com</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">工作室地址</span>
+                    <span class="contact-value">江州市山峦区人民大街444号星渊工作室</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">成立时间</span>
+                    <span class="contact-value">2016年7月20日</span>
+                </div>
+            </div>
+
+            <!-- 结语 -->
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>© 2016-2026 杂谈论坛 · 星辰大海，深渊无底</p>
+            <p style="margin-top: 8px;">
+                <a href="about.html">关于我们</a>
+                <a href="#">用户协议</a>
+                <a href="#">隐私政策</a>
+                <a href="#">联系我们</a>
+            </p>
+        </footer>
+    </div>
+
+
+</body>
+</html>

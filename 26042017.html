@@ -1,0 +1,573 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【新人报到】第一次来杂谈，请多关照！ - 杂谈论坛</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 顶部导航 */
+        .header {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav a:hover {
+            color: #2563eb;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 主内容区 */
+        .container {
+            max-width: 800px;
+            margin: 24px auto;
+            padding: 0 24px;
+        }
+
+        /* 帖子主体 */
+        .post-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .post-meta {
+            flex: 1;
+        }
+
+        .post-author {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .post-time {
+            font-size: 13px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .post-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .post-content {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .post-content p {
+            margin-bottom: 12px;
+        }
+
+        /* 评论区 */
+        .comments-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .comments-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comments-count {
+            background: #2563eb;
+            color: #fff;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* 评论输入框 */
+        .comment-input-area {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .comment-input-wrapper {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 60px;
+            transition: border-color 0.2s;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .comment-submit {
+            padding: 12px 24px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            align-self: flex-end;
+        }
+
+        .comment-submit:hover {
+            background: #1d4ed8;
+        }
+
+        /* 评论列表 */
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 12px;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .comment-body {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .comment-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .comment-action {
+            font-size: 12px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .comment-action:hover {
+            color: #2563eb;
+        }
+
+        /* 回复提示 */
+        .reply-hint {
+            background: #f0f9ff;
+            border-left: 3px solid #2563eb;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #666;
+            display: none;
+        }
+
+        .reply-hint.show {
+            display: block;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+                margin: 16px auto;
+            }
+
+            .post-card, .comments-section {
+                padding: 20px;
+            }
+
+            .post-title {
+                font-size: 20px;
+            }
+
+            .nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">杂谈论坛</div>
+            <nav class="nav">
+                <a href="indexzt.html">首页</a>
+                <a href="post.html">热门帖子</a>
+                <a href="live.html">生活杂谈</a>
+                <a href="car.html">车类杂谈</a>
+                <a href="technology.html">科技杂谈</a>
+                <a href="food.html">美食杂谈</a>
+                <a href="about.html">关于</a>
+                <a href="sousuo.html">搜索</a>
+            </nav>
+            <div class="user-info">
+                <span>杂谈用户100105101</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <div class="container">
+        <!-- 帖子主体 -->
+        <article class="post-card">
+            <div class="post-header">
+                <div class="avatar">小</div>
+                <div class="post-meta">
+                    <div class="post-author">小白233</div>
+                    <div class="post-time">2026-08-03 17:23</div>
+                </div>
+            </div>
+            <h1 class="post-title">【新人报到】第一次来杂谈，请多关照！</h1>
+            <div class="post-content">
+                <p>大家好！我是新来的，之前在别的论坛混，听说杂谈氛围很好就过来了。</p>
+                <p>请问有什么版规需要注意的吗？感觉这里的人都很友善，希望能和大家成为朋友！</p>
+                <p>PS：头像好可爱，是在哪里找的？</p>
+            </div>
+        </article>
+
+        <!-- 评论区 -->
+        <section class="comments-section">
+            <div class="comments-header">
+                评论 <span class="comments-count">8</span>
+            </div>
+
+            <!-- 评论输入框 -->
+            <div class="comment-input-area">
+                <div class="reply-hint" id="replyHint">
+                    回复 <strong id="replyTo"></strong>
+                    <span style="float:right; cursor:pointer;" onclick="cancelReply()">取消</span>
+                </div>
+                <div class="comment-input-wrapper">
+                    <textarea class="comment-input" id="commentInput" placeholder="写下你的评论..."></textarea>
+                    <button class="comment-submit" onclick="submitComment()">发布</button>
+                </div>
+            </div>
+
+            <!-- 评论列表 -->
+            <div class="comment-list" id="commentList">
+                <!-- 评论1 -->
+                <div class="comment-item">
+                    <div class="comment-avatar">清</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">清风明月</span>
+                            <span class="comment-time">2026-08-30 17:45</span>
+                        </div>
+                        <div class="comment-text">欢迎欢迎！杂谈的氛围确实很好，大家互帮互助。版规其实很简单：不人身攻击、不发广告、不挖坟。其他随便聊～</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('清风明月')">回复</span>
+                            <span class="comment-action">点赞 (12)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论2 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">书</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">书虫阿明</span>
+                            <span class="comment-time">2026-08-03 18:02</span>
+                        </div>
+                        <div class="comment-text">新人好！推荐你先去"生活杂谈"板块逛逛，那里最活跃。如果你喜欢看书，也可以来找我聊科幻～</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('书虫阿明')">回复</span>
+                            <span class="comment-action">点赞 (8)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论3 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">游</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">游戏宅</span>
+                            <span class="comment-time">2026-08-06 18:30</span>
+                        </div>
+                        <div class="comment-text">头像的话，论坛右上角"个人中心"里可以自己换。我也刚来几个月，现在已经舍不得走了哈哈。</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('游戏宅')">回复</span>
+                            <span class="comment-action">点赞 (5)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论4 (ARG线索) -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">Z</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">Zero的观察者</span>
+                            <span class="comment-time">2026-08-03 19:15</span>
+                        </div>
+                        <div class="comment-text">欢迎。不过我要提醒你一句：这个论坛的"历史"比你想象的要长。如果你翻到2016年以前的帖子，记得...多留个心眼。有些东西，不该被遗忘。</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('Zero的观察者')">回复</span>
+                            <span class="comment-action">点赞 (3)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论5 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">星</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">星辰大海</span>
+                            <span class="comment-time">2026-08-03 19:45</span>
+                        </div>
+                        <div class="comment-text">欢迎加入！杂谈的口号是"星辰大海，深渊无底"，很有意思吧？希望这里能成为你的第二个家。</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('星辰大海')">回复</span>
+                            <span class="comment-action">点赞 (9)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论6 (ARG线索) -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">老</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">老用户123</span>
+                            <span class="comment-time">2026-08-03 20:10</span>
+                        </div>
+                        <div class="comment-text">新人好啊。不过...你有没有觉得，最近论坛的UI好像偷偷改过？我记得以前不是这个样子的。还有，你有没有见过一个叫"陈默"的用户？我总觉得他好久没上线了...</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('老用户123')">回复</span>
+                            <span class="comment-action">点赞 (2)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论7 -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">暖</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">暖阳</span>
+                            <span class="comment-time">2026-08-04 21:00</span>
+                        </div>
+                        <div class="comment-text">欢迎新朋友！有什么不懂的随时问，大家都很热心的。祝你在这里玩得开心～</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('暖阳')">回复</span>
+                            <span class="comment-action">点赞 (6)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评论8 (ARG恐怖线索) -->
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">完</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">完美市民05</span>
+                            <span class="comment-time">2026-08-03 23:59</span>
+                        </div>
+                        <div class="comment-text">欢迎加入。在这里，你不会孤独。在这里，你会获得永生。永生...永生...永生...我们已经看到你了。</div>
+                        <div class="comment-actions">
+                            <span class="comment-action" onclick="replyTo('完美市民05')">回复</span>
+                            <span class="comment-action">点赞 (345)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let replyTarget = '';
+
+        // 回复功能
+        function replyTo(username) {
+            replyTarget = username;
+            document.getElementById('replyHint').classList.add('show');
+            document.getElementById('replyTo').textContent = username;
+            document.getElementById('commentInput').focus();
+            document.getElementById('commentInput').placeholder = `回复 ${username}...`;
+        }
+
+        // 取消回复
+        function cancelReply() {
+            replyTarget = '';
+            document.getElementById('replyHint').classList.remove('show');
+            document.getElementById('commentInput').placeholder = '写下你的评论...';
+        }
+
+        function submitComment() {
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            
+            if (!text) {
+                alert('请输入评论内容');
+                return;
+            }
+
+            const commentList = document.getElementById('commentList');
+            const newComment = document.createElement('div');
+            newComment.className = 'comment-item';
+            newComment.innerHTML = `
+                <div class="comment-avatar">用</div>
+                <div class="comment-body">
+                    <div class="comment-header">
+                        <span class="comment-author">杂谈用户100105101</span>
+                        <span class="comment-time">刚刚</span>
+                    </div>
+                    <div class="comment-text">${replyTarget ? `@${replyTarget} ` : ''}${text}</div>
+                    <div class="comment-actions">
+                        <span class="comment-action">回复</span>
+                        <span class="comment-action">点赞 (0)</span>
+                    </div>
+                </div>
+            `;
+
+            commentList.insertBefore(newComment, commentList.firstChild);
+            input.value = '';
+            cancelReply();
+
+            // 更新评论数
+            const countEl = document.querySelector('.comments-count');
+            countEl.textContent = parseInt(countEl.textContent) + 1;
+        }
+
+        document.getElementById('commentInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                submitComment();
+            }
+        });
+    </script>
+</body>
+</html>
